@@ -1,0 +1,4 @@
+pymongo
+matplotlib
+seaborn
+pandas
