@@ -1,43 +1,37 @@
+# Docker Compose konfigurace pro MongoDB sharded cluster s Jupyter notebookem a seederem
+# Tento soubor definuje všechny služby potřebné pro běh MongoDB clusteru s více shardy, konfiguračními servery a dvěma routery.
+# Součástí je také seeder pro naplnění databáze.
+
 services:
+  # Seeder slouží pro inicializaci.
+  # Kontejner pouze čeká (sleep infinity) naruční spouštění skriptů.
+  # Připojené volume umožňují přístup ke skriptům a datům z hostitelského systému.
   seeder:
     build:
       context: .
       dockerfile: seeder.Dockerfile
     volumes:
-      - ./scripts:/scripts
-      - ./dataset:/dataset
+      - ./scripts:/scripts      # Skripty pro seedování dat
+      - ./dataset:/dataset      # Datové soubory pro import
     entrypoint: ["sleep", "infinity"]
 
-  jupyter:
-    image: jupyter/scipy-notebook:latest
-    container_name: jupyter-notebook
-    ports:
-      - 8888:8888
-    restart: always
-    volumes:
-      - ./visualization:/home/jovyan/visualization
-      - ./dataset:/home/jovyan/dataset
-    environment:
-      - JUPYTER_TOKEN=dev
-    command: start-notebook.sh --NotebookApp.token=dev
-    depends_on:
-      - router01
-      - router02
-
 ## Router
+  # Mongos routery pro směrování dotazů do clusteru.
+  # Tyto služby zajišťují, že klientské aplikace komunikují s clusterem přes jednotné rozhraní.
+  # Každý router je připojen ke všem konfiguračním serverům a používá sdílený klíč pro autentizaci.
   router01:
     build: 
       context: docker
     container_name: router-01
     command: mongos --port 27017 --configdb rs-config-server/configsvr01:27017,configsvr02:27017,configsvr03:27017 --bind_ip_all --keyFile /data/mongodb-keyfile
     ports:
-      - 27117:27017
+      - 27117:27017             # Mapování portu pro přístup k routeru
     restart: always
     volumes:
       - ./scripts:/scripts
       - ./dataset:/dataset
-      - mongodb_cluster_router01_db:/data/db
-      - mongodb_cluster_router01_config:/data/configdb
+      - mongodb_cluster_router01_db:/data/db           # Perzistence dat routeru
+      - mongodb_cluster_router01_config:/data/configdb # Perzistence konfigurace routeru
   router02:
     build: 
       context: docker
@@ -52,9 +46,12 @@ services:
       - 27118:27017
     restart: always
     links:
-      - router01
+      - router01                # Propojení mezi routery pro případné závislosti
 
 ## Config Servers
+  # Konfigurační servery pro uchování metadat clusteru.
+  # Tyto servery uchovávají informace o rozložení dat a konfiguraci shardů.
+  # Každý konfigurační server je součástí replikačního setu rs-config-server.
   configsvr01:
     build: 
       context: docker
@@ -69,10 +66,10 @@ services:
       - 27119:27017
     restart: always
     links:
-      - shard01-a
+      - shard01-a    # Propojení na primární nody jednotlivých shardů
       - shard02-a
       - shard03-a
-      - configsvr02
+      - configsvr02  # Propojení na ostatní konfigurační servery
       - configsvr03
   configsvr02:
     build: 
@@ -101,10 +98,10 @@ services:
       - 27121:27017
     restart: always
 
-
 ## Shards
   ## Shards 01
-   
+  # Každý shard je replikovaný přes tři nody (a, b, c) pro vysokou dostupnost.
+  # Shard 01 - replikační set rs-shard-01
   shard01-a:
     build: 
       context: docker 
@@ -119,7 +116,7 @@ services:
       - 27122:27017
     restart: always
     links:
-      - shard01-b
+      - shard01-b   # Propojení na ostatní nody v rámci shardu
       - shard01-c
   shard01-b:
     build: 
@@ -149,6 +146,7 @@ services:
     restart: always
 
   ## Shards 02
+  # Shard 02 - replikační set rs-shard-02
   shard02-a:
     build: 
       context: docker
@@ -193,6 +191,7 @@ services:
     restart: always
 
   ## Shards 03
+  # Shard 03 - replikační set rs-shard-03
   shard03-a:
     build: 
       context: docker
@@ -236,6 +235,7 @@ services:
       - 27130:27017
     restart: always
 
+# Definice pojmenovaných Docker volume pro perzistenci dat jednotlivých služeb.
 volumes:
   mongodb_cluster_router01_db:
   mongodb_cluster_router01_config:

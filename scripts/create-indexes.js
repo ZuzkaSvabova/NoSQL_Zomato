@@ -1,25 +1,7 @@
-// // Switch to the correct database
-// db = db.getSiblingDB('zomatoDB');
-
-// // Restaurants
-// db.restaurants.createIndex({ restaurant_id: 1 }, { unique: true });
-// db.restaurants.createIndex({ city: 1 });
-// db.restaurants.createIndex({ cuisines: 1 });
-
-// // Users
-// db.users.createIndex({ user_id: 1 }, { unique: true });
-// db.users.createIndex({ user_location: 1 });
-
-// // Orders
-// db.orders.createIndex({ order_id: 1 }, { unique: true });
-// db.orders.createIndex({ user_id: 1 });
-// db.orders.createIndex({ order_date: 1 });
-
-// scripts/import-and-indexes.js
-
 // 1) Switch to the correct database
 db = db.getSiblingDB('zomatoDB');
 
+sh.enableSharding("zomatoDB");
 
 db.restaurants.drop();
 db.users.drop();
@@ -39,3 +21,8 @@ db.users.createIndex({ name: 1 });
 db.orders.createIndex({ user_id: 1 });
 db.orders.createIndex({ r_id: 1 });
 db.orders.createIndex({ order_date: 1 });
+
+// ––– Zomato sharding
+sh.shardCollection("zomatoDB.restaurants", { id: "hashed" });
+sh.shardCollection("zomatoDB.users",       { user_id:       "hashed" });
+sh.shardCollection("zomatoDB.orders",      { user_id:      "hashed" });

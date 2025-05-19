@@ -45,7 +45,8 @@ setup:
 	$(MAKE) docker-auth; \
 	sleep 3; \
 	$(MAKE) docker-create-indexes; \
-	$(MAKE) docker-insert-data
+	$(MAKE) docker-insert-data; \
+	$(MAKE) docker-validate
 
 # Initialize router
 docker-init-router:
@@ -67,10 +68,18 @@ docker-connect-router:
 docker-rm:
 	docker compose rm
 
+# insert data into MongoDB collections
 docker-insert-data:
 	docker compose exec router01 mongoimport -u "admin" --authenticationDatabase admin --password "123" --db zomatoDB --collection orders --file /dataset/orders.json --jsonArray
 	docker compose exec router01 mongoimport -u "admin" --authenticationDatabase admin --password "123" --db zomatoDB --collection restaurants --file /dataset/restaurants.json --jsonArray
 	docker compose exec router01 mongoimport -u "admin" --authenticationDatabase admin --password "123" --db zomatoDB --collection users --file /dataset/users.json --jsonArray
 
+# Create indexes
 docker-create-indexes:
 	docker compose exec router01 sh -c "mongosh -u admin -p 123 < /scripts/create-indexes.js"
+
+# Validate schemas
+docker-validate:
+	docker compose exec router01 \
+	  mongosh /scripts/validate-schemas.js \
+	  -u admin -p 123 --authenticationDatabase admin
