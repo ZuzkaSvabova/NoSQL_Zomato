@@ -1,15 +1,41 @@
-// Switch to the correct database
-db = db.getSiblingDB('ecommerce');
+// // Switch to the correct database
+// db = db.getSiblingDB('zomatoDB');
 
-// Orders collection
-db.orders.createIndex({ order_id: 1 }, { unique: true });
-db.orders.createIndex({ customer_id: 1 });
+// // Restaurants
+// db.restaurants.createIndex({ restaurant_id: 1 }, { unique: true });
+// db.restaurants.createIndex({ city: 1 });
+// db.restaurants.createIndex({ cuisines: 1 });
 
-// Products collection
-db.products.createIndex({ product_id: 1 }, { unique: true });
-db.products.createIndex({ product_category_name: 1 });
+// // Users
+// db.users.createIndex({ user_id: 1 }, { unique: true });
+// db.users.createIndex({ user_location: 1 });
 
-// Order Items collection
-db.order_items.createIndex({ order_item_id: 1 });
-db.order_items.createIndex({ order_id: 1 }, { unique: true });
-db.order_items.createIndex({ product_id: 1 });
+// // Orders
+// db.orders.createIndex({ order_id: 1 }, { unique: true });
+// db.orders.createIndex({ user_id: 1 });
+// db.orders.createIndex({ order_date: 1 });
+
+// scripts/import-and-indexes.js
+
+// 1) Switch to the correct database
+db = db.getSiblingDB('zomatoDB');
+
+
+db.restaurants.drop();
+db.users.drop();
+db.orders.drop();
+
+// 2) Restaurants
+db.restaurants.createIndex({ id: 1 },   { unique: true });
+db.restaurants.createIndex({ city: 1 });
+db.restaurants.createIndex({ cuisine: 1 });
+
+// 3) Users
+db.users.createIndex({ user_id: 1 }, { unique: true });
+db.users.createIndex({ email: 1 });
+db.users.createIndex({ name: 1 });
+
+// 4) Orders
+db.orders.createIndex({ user_id: 1 });
+db.orders.createIndex({ r_id: 1 });
+db.orders.createIndex({ order_date: 1 });

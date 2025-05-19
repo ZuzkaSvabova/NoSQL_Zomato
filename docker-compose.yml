@@ -35,6 +35,7 @@ services:
     restart: always
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_router01_db:/data/db
       - mongodb_cluster_router01_config:/data/configdb
   router02:
@@ -44,6 +45,7 @@ services:
     command: mongos --port 27017 --configdb rs-config-server/configsvr01:27017,configsvr02:27017,configsvr03:27017 --bind_ip_all --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_router02_db:/data/db
       - mongodb_cluster_router02_config:/data/configdb
     ports:
@@ -60,6 +62,7 @@ services:
     command: mongod --port 27017 --configsvr --replSet rs-config-server --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts 
+      - ./dataset:/dataset
       - mongodb_cluster_configsvr01_db:/data/db
       - mongodb_cluster_configsvr01_config:/data/configdb
     ports:
@@ -78,6 +81,7 @@ services:
     command: mongod --port 27017 --configsvr --replSet rs-config-server --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_configsvr02_db:/data/db
       - mongodb_cluster_configsvr02_config:/data/configdb
     ports:
@@ -90,6 +94,7 @@ services:
     command: mongod --port 27017 --configsvr --replSet rs-config-server --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_configsvr03_db:/data/db
       - mongodb_cluster_configsvr03_config:/data/configdb
     ports:
@@ -107,6 +112,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-01 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard01_a_db:/data/db
       - mongodb_cluster_shard01_a_config:/data/configdb
     ports:
@@ -122,6 +128,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-01 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard01_b_db:/data/db
       - mongodb_cluster_shard01_b_config:/data/configdb
     ports:
@@ -134,6 +141,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-01 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard01_c_db:/data/db
       - mongodb_cluster_shard01_c_config:/data/configdb
     ports:
@@ -148,6 +156,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-02 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard02_a_db:/data/db
       - mongodb_cluster_shard02_a_config:/data/configdb
     ports:
@@ -163,6 +172,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-02 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard02_b_db:/data/db
       - mongodb_cluster_shard02_b_config:/data/configdb
     ports:
@@ -175,6 +185,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-02 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard02_c_db:/data/db
       - mongodb_cluster_shard02_c_config:/data/configdb
     ports:
@@ -189,6 +200,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-03 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard03_a_db:/data/db
       - mongodb_cluster_shard03_a_config:/data/configdb
     ports:
@@ -204,6 +216,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-03 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard03_b_db:/data/db
       - mongodb_cluster_shard03_b_config:/data/configdb
     ports:
@@ -216,6 +229,7 @@ services:
     command: mongod --port 27017 --shardsvr --replSet rs-shard-03 --keyFile /data/mongodb-keyfile
     volumes:
       - ./scripts:/scripts
+      - ./dataset:/dataset
       - mongodb_cluster_shard03_c_db:/data/db
       - mongodb_cluster_shard03_c_config:/data/configdb
     ports:

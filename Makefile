@@ -29,7 +29,7 @@ docker-init-shard03:
 
 # Full initialization sequence
 setup:
-	$(MAKE) docker-down-clean
+	$(MAKE) docker-down-clean; \
 	$(MAKE) docker-up; \
 	sleep 5; \
 	$(MAKE) docker-init-configserver; \
@@ -44,12 +44,13 @@ setup:
 	sleep 5; \
 	$(MAKE) docker-auth; \
 	sleep 3; \
-	$(MAKE) docker-create-indexes
+	$(MAKE) docker-create-indexes; \
 	$(MAKE) docker-insert-data
 
 # Initialize router
 docker-init-router:
 	docker compose exec router01 sh -c "mongosh < /scripts/init-router.js"
+
 
 # Setup authentication
 docker-auth:
@@ -60,16 +61,16 @@ docker-auth:
 
 # Connect to MongoDB shell via router
 docker-connect-router:
-	docker compose exec router01 mongosh --port 27017 -u "lukas" --authenticationDatabase admin
+	docker compose exec router01 mongosh --port 27017 -u "admin" --authenticationDatabase admin
 
 # Remove all stopped containers
 docker-rm:
 	docker compose rm
 
 docker-insert-data:
-	docker compose exec seeder python /scripts/insert_orders.py
-	docker compose exec seeder python /scripts/insert_order_items.py
-	docker compose exec seeder python /scripts/insert_products.py
+	docker compose exec router01 mongoimport -u "admin" --authenticationDatabase admin --password "123" --db zomatoDB --collection orders --file /dataset/orders.json --jsonArray
+	docker compose exec router01 mongoimport -u "admin" --authenticationDatabase admin --password "123" --db zomatoDB --collection restaurants --file /dataset/restaurants.json --jsonArray
+	docker compose exec router01 mongoimport -u "admin" --authenticationDatabase admin --password "123" --db zomatoDB --collection users --file /dataset/users.json --jsonArray
 
 docker-create-indexes:
-	docker compose exec router01 sh -c "mongosh -u lukas -p 123 < /scripts/create-indexes.js"
+	docker compose exec router01 sh -c "mongosh -u admin -p 123 < /scripts/create-indexes.js"
