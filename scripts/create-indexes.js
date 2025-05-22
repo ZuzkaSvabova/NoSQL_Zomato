@@ -22,7 +22,7 @@ db.orders.createIndex({ user_id: 1 });
 db.orders.createIndex({ r_id: 1 });
 db.orders.createIndex({ order_date: 1 });
 
-// ––– Zomato sharding
+// 5) Sharding collections with hashed sharding key
 sh.shardCollection("zomatoDB.restaurants", { id: "hashed" });
 sh.shardCollection("zomatoDB.users",       { user_id:       "hashed" });
 sh.shardCollection("zomatoDB.orders",      { user_id:      "hashed" });

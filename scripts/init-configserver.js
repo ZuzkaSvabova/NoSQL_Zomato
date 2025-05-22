@@ -1,5 +1,5 @@
 #!/bin/bash
-
+//inicializace config serveru
 mongosh <<EOF
 var config = {
 	"_id": "rs-config-server",

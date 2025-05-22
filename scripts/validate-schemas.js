@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Definice schémat pro validaci (stejná jako v kolekcích)
+// Definice schémat pro validaci
 const schemas = {
   restaurants: {
     bsonType: "object",
